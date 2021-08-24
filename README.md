@@ -1,2 +1,2 @@
 # data_pre-process_translation
-Using torchtext to process the data for translation
+注意：由于IWSLT2016数据集默认使用谷歌网盘下载，国内无法直接调用，需要手动下载后更改IWSLT2016源代码替换url下载。
