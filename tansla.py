@@ -12,6 +12,7 @@ from torch.nn import Transformer
 import math
 from torch.nn.utils.rnn import pad_sequence
 from timeit import default_timer as timer
+import sacrebleu
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 SRC_LANGUAGE = 'de'
 TGT_LANGUAGE = 'en'
@@ -257,13 +258,24 @@ loss_fn = torch.nn.CrossEntropyLoss(ignore_index=PAD_IDX)
 
 optimizer = torch.optim.Adam(transformer.parameters(), lr=0.0001, betas=(0.9, 0.98), eps=1e-9)
 
-NUM_EPOCHS = 2
-
+NUM_EPOCHS = 1
+log_interval = 200
 for epoch in range(1, NUM_EPOCHS+1):
     start_time = timer()
     train_loss = train_epoch(transformer, optimizer)
+    cur_loss=train_loss/log_interval
     end_time = timer()
     val_loss = evaluate(transformer)
-    print((f"Epoch: {epoch}, Train loss: {train_loss:.3f}, Val loss: {val_loss:.3f}, "f"Epoch time = {(end_time - start_time):.3f}s"))
+    print((f"Epoch: {epoch}, Train loss: {train_loss:.3f}, Val loss: {val_loss:.3f}, "f"Epoch time = {(end_time - start_time):.3f}s, , PPL: {math.exp(cur_loss):.3f}"))
+#bleu score computing
+hypo=[]
+refe=[]
+for sour,targ in test :
+    tar_list=[targ]
+    hypo.append(translate(transformer, sour))
+    refe.append(tar_list)
+bleu=sacrebleu.corpus_bleu(hypo,refe)
+print(hypo)
+print('BLUE :', bleu)
 
 print(translate(transformer, "Eine Gruppe von Menschen steht vor einem Iglu ."))
