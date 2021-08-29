@@ -275,7 +275,6 @@ for sour,targ in test :
     hypo.append(translate(transformer, sour))
     refe.append(tar_list)
 bleu=sacrebleu.corpus_bleu(hypo,refe)
-print(hypo)
 print('BLUE :', bleu)
 
 print(translate(transformer, "Eine Gruppe von Menschen steht vor einem Iglu ."))
